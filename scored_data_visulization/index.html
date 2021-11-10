@@ -9,7 +9,41 @@
   <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 </head>
 
-<body>
+<body style="background-color: #e2e3e2;">
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-12 jumbotron text-center" style="color: #ffffff;">
+        <h1 class="display-4">Tesla Twitter Sentiment Dashboard</h1>
+        <p>Use the interactive charts below to explore the dataset</p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-2">
+        <div class="well" style="background-color: #36a7b6; color: #ffffff;"> 
+          <h5>Pick A Weekday</h5>
+          <!-- <select id="selDataset"></select> -->
+          <select id="selDataset" onchange="optionChanged(this.value)" style="background-color:#d7f1af; color: black;"></select>
+        </div>
+        <div class="panel panel-primary" style="background-color: #a4e248; color: #ffffff; border: #36a7b6;">
+          <div class="panel-heading" style="background-color: #36a7b6;">
+            <h3 class="panel-title" style="color: #ffffff;">Sentiment Summary</h3>
+          </div>
+          <div id="sample-metadata" class="panel-body"></div>
+        </div>
+      </div>
+      <div class="col-sm-5">
+        <div id="monday-pie-plot"></div>
+      </div>
+      <div class="col-sm-5">
+        <div id="gauge"></div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-12">
+        <div id="bubble"></div>
+      </div>
+    </div>
+  </div>
   <div id="bar-plot"></div>
   <div id="line-plot"></div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.5.0/d3.js"></script>

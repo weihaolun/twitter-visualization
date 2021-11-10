@@ -6,6 +6,13 @@ var tweetsByWeekday = d3.nest()
     .entries(scoredTweets);
 console.log(tweetsByWeekday);
 
+// Group Tweets by weekday
+var hourtweetsByWeekday = d3.nest()
+    .key(function(d) {return d.weekday;})
+    .entries(hourlySample);
+console.log(hourtweetsByWeekday);
+
+
 // Weekday tweets count (array)
 var weekdayCount = d3.nest()
     .key(function(d) { return d.weekday; })
@@ -68,7 +75,7 @@ console.log(hourCountArray);
 //   };
 //   Plotly.newPlot("line-plot", data, layout);
 
-var value = [['33515']]
+var value = [['374877']]
 var totalTweets = [{
     type: 'table',
     header: {
@@ -210,7 +217,7 @@ console.log(mondayTweets);
 var scoreMonday = d3.nest()
   .key(function(d) { return d.score; })
   .rollup(function(v) { return v.length; })
-  .entries(mondayTweets);
+  .object(mondayTweets);
 console.log(scoreMonday);
 
 // Create an array to hold 0 and 1 and another array to hold sentiment counts
@@ -272,4 +279,27 @@ var mondayNegaLine = {
 var mondaySentimentLine = [mondayPosiLine, mondayNegaLine];
 Plotly.newPlot('double-line-monday', mondaySentimentLine, layout);
 
-exports.array = mondayTweets;
+console.log(mondayTweets)
+console.log(scoreByDay);
+console.log(hourlyByWeekday[0]);
+
+console.log(scoreMonday)
+
+// var theArray = [];
+// for (let i = 0; i < 2; i++){
+//     theArray.push(scoreMonday[i].key)
+//     theArray.push(scoreMonday[i].value);
+// }
+// console.log(theArray);
+
+const pairs = Object.entries(scoreMonday);
+console.log(pairs)
+
+console.log(hourWeekday);
+
+const theDays = [];
+for (let i = 0; i < 6; i++){
+    theDays.push(hourWeekday[i].key);}
+console.log(theDays)
+
+
