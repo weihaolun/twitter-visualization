@@ -3,7 +3,7 @@ function init() {
     const selector = d3.select("#selDataset");
 
     // Use the list of weekday names to populate the select options
-    d3.json("https://raw.githubusercontent.com/weihaolun/Twitter-Sentiment-Analysis/main/words_viz_draft/cleaned_scored_tweets.json").then((data) => {
+    d3.json("https://raw.githubusercontent.com/weihaolun/twitter-visualization/master/datasources/first_week_data.json").then((data) => {
          
         var dataByWeekday = d3.nest()
             .key(function(d) {return d.weekday;})
@@ -38,11 +38,12 @@ function optionChanged(newWeekday) {
 
 // Info Panel
 function buildMetadata(weekday) {
-    d3.json("https://raw.githubusercontent.com/weihaolun/Twitter-Sentiment-Analysis/main/words_viz_draft/cleaned_scored_tweets.json").then((data) =>{
+    d3.json("https://raw.githubusercontent.com/weihaolun/twitter-visualization/master/datasources/first_week_data.json").then((data) =>{
         
         var dataByWeekday = d3.nest()
             .key(function(d) {return d.weekday;})
             .entries(data);
+        console.log(dataByWeekday)
     
         const resultArray = dataByWeekday.filter(sampleObj => sampleObj.key == weekday);
         

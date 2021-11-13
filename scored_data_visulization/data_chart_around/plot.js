@@ -401,3 +401,14 @@ console.log("this is hourly by weekday",hourlyByWeekday);
 
 const resultArrayex = hourWeekday.filter(sampleObj => sampleObj.key);
 console.log("this is the resultArray", resultArrayex);
+
+
+// function testData(weekday) {
+//     d3.json("https://raw.githubusercontent.com/weihaolun/twitter-visualization/master/datasources/first_week_data.json").then((data) =>{
+
+//     var firstweek = data;
+//     console.log(firstweek);
+//     })
+// }
+
+console.log(firstWeekData);
