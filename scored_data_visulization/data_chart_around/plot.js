@@ -207,7 +207,7 @@ Plotly.newPlot('double-line-wholeweek', overallControlLine, layout);
 var hourlyByWeekday = d3.nest()
     .key(function(d) {return d.weekday;})
     .entries(hourlySample);
-console.log(hourlyByWeekday);
+console.log("this is hourly by weekday",hourlyByWeekday);
 
 // Create an array to hold all monday tweets
 var mondayTweets = hourlyByWeekday[0].values;
@@ -302,4 +302,99 @@ for (let i = 0; i < 6; i++){
     theDays.push(hourWeekday[i].key);}
 console.log(theDays)
 
+console.log(hourWeekday[0].values)
 
+
+
+
+
+var mondayTweets = hourWeekday[0].values
+console.log(mondayTweets)
+
+var mondayScoreDistribution = d3.nest()
+  .key(function(d) { return d.score; })
+  .rollup(function(v) { return v.length; })
+  .entries(mondayTweets);
+console.log(mondayScoreDistribution);
+
+const mondayDisplay = {"Positive": mondayScoreDistribution[0], "Negative": mondayScoreDistribution[1]}
+
+
+// Create an array to hold 0 and 1 and another array to hold sentiment counts
+const scoreLabel = ["1=Positive", "0=Negative"];
+const mondayCount = [];
+for (let i = 0; i < 2; i++){
+    mondayCount.push(mondayScoreDistribution[i]);
+}
+
+console.log(scoreLabel);
+console.log(mondayCount);
+
+
+// plot monday sentiment distribution pie chart
+var mondayPie = {
+    labels: scoreLabel,
+    values: mondayCount,
+    // labels: ["0=Positive", "1=Negative"],
+    type: 'pie'
+   };
+   var data = [mondayPie];
+   var layout = {
+    title: "Monday Sentiment Distribution",
+   };
+   Plotly.newPlot("monday-pie-plot", data, layout);
+
+   // Create an array to hold monday tweets hourly counts by sentiment
+var mondayHourlyDistribution = d3.nest()
+  .key(function(d) {return d.hours; }) 
+  .key(function(d) { return d.score; })
+  .rollup(function(v) { return v.length; })
+  .entries(mondayTweets);
+console.log(mondayHourlyDistribution);
+
+// Creat an array to hold monday posi count and an array to hold monday nega count
+const mondayPosiHour = [];
+const mondayNegaHour = [];
+for (let i = 0; i < 24; i++){
+    mondayPosiHour.push(mondayHourlyDistribution[i].values[0].value);
+    mondayNegaHour.push(mondayHourlyDistribution[i].values[1].value);
+}
+console.log(mondayPosiHour);
+console.log(mondayNegaHour);
+
+// plot monday hourly sentiment line chart
+var mondayPosiLine = {
+    x: hourArray,
+    y: mondayPosiCountHour,
+    name: '0=Positive',
+    type: 'scatter'
+};
+var mondayNegaLine = {
+    x: hourArray,
+    y: mondayNegaCountHour,
+    name: '1=Negative',
+    type: 'scatter'
+};
+var mondaySentimentLine = [mondayPosiLine, mondayNegaLine];
+Plotly.newPlot('double-line-monday', mondaySentimentLine, layout);
+
+
+console.log(mondayScoreDistribution);
+
+// const newArr = mondayScoreDistribution.map(myFunction)
+
+// function myFunction(counts) {
+//     return { "Positive": item[0], "Negative": item[1]}
+// }
+
+// const newArray = mondayScoreDistribution.map(item => {
+//     return { "Positive": item[0], "Negative": item[1]}
+// })
+
+console.log(mondayDisplay)
+
+console.log("this is hourly by weekday",hourlyByWeekday);
+
+console.log(examplefile)
+
+console.log(Object.keys(examplefile))

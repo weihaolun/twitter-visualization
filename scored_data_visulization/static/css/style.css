@@ -1,0 +1,11 @@
+.jumbotron {
+    background-image: url("../images/jumbotron.jpg");
+    background-size: 100% 100%;
+    min-height: 500px;
+    text-align: center;
+  }
+
+  /* body {
+    background: url(fallback.png);
+    background-image: url("../images/tesla.svg"), none;
+  } */
