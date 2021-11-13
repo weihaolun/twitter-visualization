@@ -395,6 +395,9 @@ console.log(mondayDisplay)
 
 console.log("this is hourly by weekday",hourlyByWeekday);
 
-console.log(examplefile)
+// console.log(examplefile)
 
-console.log(Object.keys(examplefile))
+// console.log(Object.keys(examplefile))
+
+const resultArrayex = hourWeekday.filter(sampleObj => sampleObj.key);
+console.log("this is the resultArray", resultArrayex);

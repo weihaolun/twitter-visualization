@@ -5,12 +5,10 @@ function init() {
     // Use the list of weekday names to populate the select options
     d3.json("https://raw.githubusercontent.com/weihaolun/twitter-visualization/master/scored_data_visulization/weekday_hour.json").then((data) => {
         
-        const theDays = [];
+        const weekdayNames = [];
         for (let i = 0; i < 6; i++){
-        theDays.push(data[i].key);}
-        console.log(theDays)
-        
-        const weekdayNames = theDays;
+        weekdayNames.push(data[i].key);}
+        console.log("this is the weekdays", weekdayNames)
 
         weekdayNames.forEach((weekday) => {
         selector
@@ -40,6 +38,7 @@ function buildMetadata(weekday) {
     d3.json("https://raw.githubusercontent.com/weihaolun/twitter-visualization/master/scored_data_visulization/weekday_hour.json").then((data) =>{
         const metadata = data;
         const resultArray = metadata.filter(sampleObj => sampleObj.key == weekday);
+        console.log("this is the resultArray", resultArray);
         
         const theDayTweets = resultArray[0].values;
 
