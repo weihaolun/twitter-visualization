@@ -3,7 +3,7 @@ function init() {
     const selector = d3.select("#selDataset");
 
     // Use the list of weekday names to populate the select options
-    d3.json("https://raw.githubusercontent.com/weihaolun/twitter-visualization/master/datasources/all_weeks_data.json").then((data) => {
+    d3.json("https://raw.githubusercontent.com/weihaolun/twitter-visualization/master/datasources/first_week_data.json").then((data) => {
 
         var dataByWeekday = d3.nest()
             .key(function (d) { return d.weekday; })
@@ -40,6 +40,11 @@ function optionChanged(newWeekday) {
 // Data Panel
 function buildMetadata(weekday) {
     d3.json("https://raw.githubusercontent.com/weihaolun/Twitter-Sentiment-Analysis/main/tweets_count.json").then((data) => {
+        
+    // Roll up total counts data by weekday (this is the total tweets occured)
+        var rollByWeekday = d3.nest()
+            .key(function (d) { return d.weekday; })
+            .entries(data);
 
         // Create an array for each day
         const countArray = data.filter(sampleObj => sampleObj.weekday === weekday);
@@ -64,33 +69,8 @@ function buildMetadata(weekday) {
             TOTALPANEL.append("h6").text(`${key.toUpperCase()}: ${value.toString()}`);
         });
 
-        // array to hold all dates
-        const dateArray = [];
-        for (let i = 0; i < data.length; i++) {
-            dateArray.push(data[i].created_date)
-        }
-
-        // to calculate number of weeks
-        numberOfWeeks = Math.round(dateArray.length / 7);
-        console.log("this is the number of weeks", numberOfWeeks);
-
-        // object to hold start and end date and weeks
-        const dataDateInfo = {
-            "Date Range": `${dateArray[0]} -- ${dateArray[dateArray.length-1]}`,
-            "Weeks": numberOfWeeks
-        }
-
-        // Create a panel to hold the all tweets occured content
-        const DATEPANEL = d3.select("#data-date-info");
-        DATEPANEL.html("");
-
-        // Append total tweets occured to the pannel with selector
-        Object.entries(dataDateInfo).forEach(([key, value]) => {
-            DATEPANEL.append("h6").text(`${key.toUpperCase()}: ${value.toString()}`);
-        });
-
     })
-    d3.json("https://raw.githubusercontent.com/weihaolun/twitter-visualization/master/datasources/all_weeks_data.json").then((data) => {
+    d3.json("https://raw.githubusercontent.com/weihaolun/twitter-visualization/master/datasources/first_week_data.json").then((data) => {
 
         // Re-arrange the dataset by weekday
         var dataByWeekday = d3.nest()
@@ -167,6 +147,37 @@ function buildMetadata(weekday) {
             COUNTPANEL.append("h6").text(`${key.toUpperCase()}: ${value.toString()}%`);
         });
 
+        // const PANEL2 = d3.select("#weekinfo");
+
+        // const numofWeeks = {"WEEKS": "2", "Date Range": "11/01/2021 - 11/15/2021"}
+        // Object.entries(numofWeeks).forEach(([key,value]) => {
+        //     PANEL2.text(`${key.toUpperCase()}: ${value.toString()}`);
+        //     });
+
+        // Create an array to hold 0 and 1 and another array to hold sentiment counts
+        // const scoreLabel = ["1=Positive", "0=Negative"];
+        // const theDayCount = [];
+        // for (let i = 0; i < 2; i++) {
+        //     theDayCount.push(resultScoreCount[i]);
+        // }
+
+        // // plot the day's sentiment distribution pie chart
+        // const dayScorePie = {
+        //     labels: scoreLabel,
+        //     values: theDayCount,
+        //     // labels: ["0=Positive", "1=Negative"],
+        //     type: 'pie',
+        //     marker: { colors: ["#B73038", "#8B9094"] }
+        // };
+        // const pieData = [dayScorePie];
+        // const pielayout = {
+        //     title: "<b> Sentiment Distribution <b>",
+        //     paper_bgcolor: "#D7DCDD",
+        //     plot_bgcolor: "#D7DCDD",
+        // };
+        // Plotly.newPlot("theday-pie-plot", pieData, pielayout);
+
+        // Create a gauge chart for positive rate
         var gaugeData = [
             {
               domain: { x: [0, 1], y: [0, 1] },
@@ -296,7 +307,7 @@ function buildMetadata(weekday) {
             title: "<b>Top 10 Words<b>",
             paper_bgcolor: "#D7DCDD",
             plot_bgcolor: "#D7DCDD",
-            xaxis: { range: [0, 1600] },
+            xaxis: { range: [0, 1000] },
             yaxis: { range: [-1, 10] },
         };
         // Use Plotly to plot the data with the layout. 
@@ -324,9 +335,9 @@ function buildMetadata(weekday) {
             // create and configure a color scale.
             var customColorScale = anychart.scales.ordinalColor();
             customColorScale.ranges([
-                { less: 400 },
-                { from:400, to: 1000 },
-                { greater: 1000 }
+                { less: 200 },
+                { from:200, to: 500 },
+                { greater: 500 }
             ]);
             customColorScale.colors(["#8B9094", "#4A4B4C", "#B73038"]);
             // set the color scale as the color scale of the chart
