@@ -314,8 +314,8 @@ console.log(mondayTweets)
 var mondayScoreDistribution = d3.nest()
   .key(function(d) { return d.score; })
   .rollup(function(v) { return v.length; })
-  .entries(mondayTweets);
-console.log(mondayScoreDistribution);
+  .object(mondayTweets);
+console.log("look for this", mondayScoreDistribution);
 
 const mondayDisplay = {"Positive": mondayScoreDistribution[0], "Negative": mondayScoreDistribution[1]}
 
@@ -381,34 +381,116 @@ Plotly.newPlot('double-line-monday', mondaySentimentLine, layout);
 
 console.log(mondayScoreDistribution);
 
-// const newArr = mondayScoreDistribution.map(myFunction)
 
-// function myFunction(counts) {
-//     return { "Positive": item[0], "Negative": item[1]}
-// }
-
-// const newArray = mondayScoreDistribution.map(item => {
-//     return { "Positive": item[0], "Negative": item[1]}
-// })
 
 console.log(mondayDisplay)
 
 console.log("this is hourly by weekday",hourlyByWeekday);
 
-// console.log(examplefile)
-
-// console.log(Object.keys(examplefile))
 
 const resultArrayex = hourWeekday.filter(sampleObj => sampleObj.key);
 console.log("this is the resultArray", resultArrayex);
 
 
-// function testData(weekday) {
-//     d3.json("https://raw.githubusercontent.com/weihaolun/twitter-visualization/master/datasources/first_week_data.json").then((data) =>{
+// d3.json("first_week_data.json").then(function(data){
+//     console.log(data);
+//     var dataByWeekday = d3.nest()
+//     .key(function(d) {return d.weekday;})
+//     .entries(data);
+//     console.log("this is data by weekdays", dataByWeekday);
 
-//     var firstweek = data;
-//     console.log(firstweek);
-//     })
-// }
+//     const mondaysTweets = dataByWeekday[0].values
+//     console.log("this is mondy tweets", mondaysTweets)
+    
+//     const tweetstext = [];
+//     for (let i = 0; i < 5; i++) {
+//         tweetstext.push(mondaysTweets[i].tweet);
+//     }
+//     console.log(tweetstext)
 
-console.log(firstWeekData);
+// })
+
+d3.json("tweets_count.json").then(function(data){
+    // const weekdayCounts = [];
+    // for (let i = 0; i < 7; i++) {
+    //     weekdayCounts.push(data[i].tweet_count);
+    // }
+    // console.log(weekdayCounts)
+
+    // const weekdayCounts = d3.nest()
+    // .key(function (d) { return d.weekday; })
+    // .values(function (d) { return d.tweet_count; })
+    // .entries(data);
+    // console.log("result sccore count", weekdayCounts);
+
+    var rollByWeekday = d3.nest()
+    .key(function (d) { return d.weekday; })
+    .object(data);
+    console.log(rollByWeekday)
+
+    mondayCounts = rollByWeekday["Monday"]
+    console.log(mondayCounts)
+
+    var total = 0;
+    for (var i = 0; i < mondayCounts.length; i++) {
+        total += mondayCounts[i].tweet_count;}
+    console.log(total);
+    
+    console.log("this is the count data", data);
+    
+    // array to hold all dates
+    const dateArray = [];
+    for (let i = 0; i < data.length; i++) {
+        dateArray.push(data[i].created_date)
+    }
+    console.log("this is the date array", dateArray);
+
+    // to calculate number of weeks
+    numberOfWeeks = Math.round(dateArray.length / 7);
+    console.log("this is the number of weeks", numberOfWeeks);
+
+    // object to hold start and end date
+    const dateRange = {"Start Date": dateArray[0], 
+                        "End Date": dateArray[dateArray.length-1]}
+    console.log("this is the date range", dateRange);
+
+    // count data nested by dates
+    const dataByDate = d3.nest()
+        .key(function (d) { return d.created_date; })
+        .entries(data);
+    console.log("this is the data by date", dataByDate);
+
+    const weekone = [];
+    for (let i = 0; i < 7; i++) {
+        weekone.push(dataByDate[i]);
+    }
+
+    const weektwo = [];
+    for (let i = 7; i < 14; i++) {
+        weektwo.push(dataByDate[i]);
+    }
+    console.log("this is week one", weekone);
+    console.log("this is week two", weektwo);
+
+    const dataByWeek = {"WEEK01":weekone, "WEEK02":weektwo};
+    console.log("this is by week", dataByWeek);
+
+
+
+
+     
+})
+
+console.log("this is monday 4800 tweets", mondayTweets)
+
+const tweetsByScore = d3.nest()
+    .key(function (d) {return d.score; })
+    .key(function (d) {return d.tweet;})
+    .entries(mondayTweets);
+console.log("this is the day's data rolled by scores", tweetsByScore);
+
+
+
+
+// console.log("this is the object with counts", mondayScoreDistribution);
+
