@@ -71,30 +71,30 @@ function buildWeekdata(weeks) {
             RANGEPANEL.append("h6").text(`${key.toUpperCase()}: ${value.toString()}`);
         });
 
-      // Accumulate the weekly occured.
-        var totalWeeklyOccured = 0
+      // Accumulate the weekly occurred.
+        var totalWeeklyOccurred = 0
         for (var i = 0; i < theWeekData.length; i++) {
-            totalWeeklyOccured += theWeekData[i].tweet_count;
+            totalWeeklyOccurred += theWeekData[i].tweet_count;
         }
-        const totalTweetsOccured = {
-            "Weekly Total": `${totalWeeklyOccured}`
+        const totalTweetsOccurred = {
+            "Weekly Total": `${totalWeeklyOccurred}`
         };
-        console.log("this is the total weekly occured", totalTweetsOccured)
+        console.log("this is the total weekly occurred", totalTweetsOccurred)
 
         // Total Tweets Panel
         const OCCURPANEL = d3.select("#total-tweets-occurred");
         OCCURPANEL.html("");
 
-        Object.entries(totalTweetsOccured).forEach(([key, value]) => {
+        Object.entries(totalTweetsOccurred).forEach(([key, value]) => {
             OCCURPANEL.append("h6").text(`${key.toUpperCase()}: ${value.toString()}`);
         });
 
         // Calculate the average count per day
-        averageCount = Math.round(totalWeeklyOccured / 7);
+        averageCount = Math.round(totalWeeklyOccurred / 7);
         const averageTweets = {
             "Average Tweets": `${averageCount}`
         };
-        console.log("this is the average occured per day", averageTweets)
+        console.log("this is the average occurred per day", averageTweets)
         
         // Average Tweets Panel
         const AVERAGEPANEL = d3.select("#average-tweets");
@@ -127,7 +127,7 @@ function buildWeekdata(weeks) {
         var barData = [weeklyBarTrace];
 
         var barLayout = {
-            title: "<b> Total Tweets Occured Each Day<b>",
+            title: "<b> Total Tweets Occurred Each Day<b>",
             paper_bgcolor: "#D7DCDD",
             plot_bgcolor: "#D7DCDD",
         };
