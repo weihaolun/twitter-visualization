@@ -25,6 +25,7 @@ function init() {
         const firstWeekday = weekdayNames[0];
         //buildCharts(firstWeekday);
         buildMetadata(firstWeekday);
+        buildCharts(firstWeekday);
     });
 }
 
@@ -34,7 +35,7 @@ init();
 function optionChanged(newWeekday) {
     // Fetch new data each time a new sample is selected
     buildMetadata(newWeekday);
-    //buildCharts(newWeekday);
+    buildCharts(newWeekday);
 };
 
 // Data Panel
@@ -203,8 +204,8 @@ function buildMetadata(weekday) {
         const theDayPosiHour = [];
         const theDayNegaHour = [];
         for (let i = 0; i < 24; i++) {
-            theDayPosiHour.push(theDayHourlyDistribution[i].values[1].value);
-            theDayNegaHour.push(theDayHourlyDistribution[i].values[0].value);
+            theDayPosiHour.push(theDayHourlyDistribution[i].values[0].value);
+            theDayNegaHour.push(theDayHourlyDistribution[i].values[1].value);
         }
 
         // plot the day hourly sentiment line chart
@@ -232,32 +233,151 @@ function buildMetadata(weekday) {
         const hourSentimentLine = [thePosiLine, theNegaLine];
         Plotly.newPlot('day-double-line', hourSentimentLine, lineLayout);
 
+        // // Initialize dictionary for word count
+        // var wordCounts = {}
+        // for (i = 0; i < theDayTweets.length; i++) {
+        //     // Get value of "string_text" key
+        //     var arrayOfWords = theDayTweets.map(value => value.text)
+        // }
+        // arrayOfWords.forEach(function (list) {
+        //     // Iterate through each word to add to dictionary
+        //     list.forEach(function (word) {
+        //         // Add word if not in dictionary and put 1 as value
+        //         if (!wordCounts[word]) {
+        //             wordCounts[word] = 1;
+        //         } else {
+        //             // Add count if word is already in dictionary
+        //             wordCounts[word]++;
+        //         }
+        //     })
+        // })
+        // // Create items array
+        // var items = Object.keys(wordCounts).map(function (key) {
+        //     return [key, wordCounts[key]];
+        // });
+
+        // // Sort the array based on the second element
+        // items.sort(function (first, second) {
+        //     return second[1] - first[1];
+        // });
+
+        // // Create a new array with only the first 100 / 10 items
+        // var topWordsCloud = items.slice(1, 101)
+        // var topWords = items.slice(1, 11)
+        // console.log("This weekday's top 10 words counts", topWords)
+
+        // // Create the yticks for the bar chart.
+        // var yticks = topWords.map(function (word) {
+        //     return word[0]
+        // }).reverse()
+        // var wordValues = topWords.map(function (word) {
+        //     return word[1]
+        // }).reverse()
+        // //var wordLabels = topWords[0]
+
+        // // Create the trace for the bar chart. 
+        // var wordBarData = [{
+        //     type: "bar",
+        //     x: wordValues,
+        //     y: yticks,
+        //     marker:{color: "#B73038"},
+        //     //text: wordLabels,
+        //     orientation: "h"
+        // }];
+
+        // // Create the layout for the bar chart. 
+        // var wordBarLayout = {
+        //     title: "<b>Top 10 Words<b>",
+        //     paper_bgcolor: "#D7DCDD",
+        //     plot_bgcolor: "#D7DCDD",
+        //     xaxis: { range: [0, 1600] },
+        //     yaxis: { range: [-1, 10] },
+        // };
+        // // Use Plotly to plot the data with the layout. 
+        // Plotly.newPlot("word-bar", wordBarData, wordBarLayout);
+
+        // // Tag Cloud
+        // CLOUDPANEL = d3.select("#cloud");
+        // CLOUDPANEL.html("");
+        // anychart.onDocumentReady(function () {
+        //     // create a tag (word) cloud chart
+        //     const chart = anychart.tagCloud(topWordsCloud);
+        //     // set the container id
+        //     chart.container("cloud");
+        //     // format the chart title
+        //     const title = chart.title();
+        //     title.enabled(true);
+        //     title.text("Top 100 Words")
+        //     title.fontWeight("bold");
+        //     title.fontColor("#4a4b4c");
+        //     title.fontSize(17);
+        //     // set an array of angles at which the words will be laid out
+        //     chart.angles([0]);
+        //     // set the mode of the tag cloud
+        //     chart.mode("spiral");
+        //     // create and configure a color scale.
+        //     var customColorScale = anychart.scales.ordinalColor();
+        //     customColorScale.ranges([
+        //         { less: 400 },
+        //         { from:400, to: 1000 },
+        //         { greater: 1000 }
+        //     ]);
+        //     customColorScale.colors(["#8B9094", "#4A4B4C", "#B73038"]);
+        //     // set the color scale as the color scale of the chart
+        //     chart.colorScale(customColorScale);
+        //     // add a color range
+        //     chart.colorRange().enabled(true);
+        //     var background = chart.background();
+        //     background.fill('#D7DCDD');
+        //     // display the word cloud chart
+        //     chart.tooltip(false);
+        //     chart.draw();
+        
+        // });
+    });
+}
+
+function buildCharts(weekday) {
+    d3.json("https://raw.githubusercontent.com/weihaolun/twitter-visualization/master/datasources/all_weeks_data.json").then((data) => {
+
+        // Re-arrange the dataset by weekday
+        var dataByWeekday = d3.nest()
+            .key(function (d) { return d.weekday; })
+            .entries(data);
+        
+        // Create an array to hold each weekday's detail with key
+        const resultArray = dataByWeekday.filter(sampleObj => sampleObj.key == weekday);
+        
+        // Create an array to hold sample data only (with no key)
+        const theDayTweets = resultArray[0].values;
+        console.log("this is the day's data", theDayTweets)
+
         // Initialize dictionary for word count
         var wordCounts = {}
         for (i = 0; i < theDayTweets.length; i++) {
-            // Get value of "string_text" key
-            var arrayOfWords = theDayTweets.map(value => value.text)
-        }
-        arrayOfWords.forEach(function (list) {
-            // Iterate through each word to add to dictionary
-            list.forEach(function (word) {
-                // Add word if not in dictionary and put 1 as value
-                if (!wordCounts[word]) {
-                    wordCounts[word] = 1;
-                } else {
-                    // Add count if word is already in dictionary
-                    wordCounts[word]++;
-                }
-            })
+           // Get value of "string_text" key
+           var arrayOfWords = theDayTweets.map(value => value.text)
+       }
+       arrayOfWords.forEach(function (list) {
+           // Iterate through each word to add to dictionary
+           list.forEach(function (word) {
+               // Add word if not in dictionary and put 1 as value
+               if (!wordCounts[word]) {
+                   wordCounts[word] = 1;
+               } else {
+                   // Add count if word is already in dictionary
+                   wordCounts[word]++;
+               }
+           })
         })
         // Create items array
         var items = Object.keys(wordCounts).map(function (key) {
-            return [key, wordCounts[key]];
+           return [key, wordCounts[key]];
         });
 
         // Sort the array based on the second element
         items.sort(function (first, second) {
-            return second[1] - first[1];
+           return second[1] - first[1];
         });
 
         // Create a new array with only the first 100 / 10 items
@@ -267,34 +387,33 @@ function buildMetadata(weekday) {
 
         // Create the yticks for the bar chart.
         var yticks = topWords.map(function (word) {
-            return word[0]
+           return word[0]
         }).reverse()
         var wordValues = topWords.map(function (word) {
-            return word[1]
+           return word[1]
         }).reverse()
         //var wordLabels = topWords[0]
 
         // Create the trace for the bar chart. 
         var wordBarData = [{
-            type: "bar",
-            x: wordValues,
-            y: yticks,
-            marker:{color: "#B73038"},
-            //text: wordLabels,
-            orientation: "h"
+           type: "bar",
+           x: wordValues,
+           y: yticks,
+           marker:{color: "#B73038"},
+           //text: wordLabels,
+           orientation: "h"
         }];
 
         // Create the layout for the bar chart. 
         var wordBarLayout = {
-            title: "<b>Top 10 Words<b>",
-            paper_bgcolor: "#D7DCDD",
-            plot_bgcolor: "#D7DCDD",
-            xaxis: { range: [0, 1600] },
-            yaxis: { range: [-1, 10] },
+           title: "<b>Top 10 Words<b>",
+           paper_bgcolor: "#D7DCDD",
+           plot_bgcolor: "#D7DCDD",
+           xaxis: { range: [0, 1600] },
+           yaxis: { range: [-1, 10] },
         };
         // Use Plotly to plot the data with the layout. 
         Plotly.newPlot("word-bar", wordBarData, wordBarLayout);
-
         // Tag Cloud
         CLOUDPANEL = d3.select("#cloud");
         CLOUDPANEL.html("");
@@ -318,8 +437,8 @@ function buildMetadata(weekday) {
             var customColorScale = anychart.scales.ordinalColor();
             customColorScale.ranges([
                 { less: 400 },
-                { from:400, to: 1000 },
-                { greater: 1000 }
+                { from:400, to: 800 },
+                { greater: 800 }
             ]);
             customColorScale.colors(["#8B9094", "#4A4B4C", "#B73038"]);
             // set the color scale as the color scale of the chart
@@ -331,10 +450,7 @@ function buildMetadata(weekday) {
             // display the word cloud chart
             chart.tooltip(false);
             chart.draw();
-        
         });
     });
 }
-
-
 
