@@ -3,7 +3,7 @@ function init() {
     const selector = d3.select("#selDataset");
 
     // Use the list of weekday names to populate the select options
-    d3.json("https://raw.githubusercontent.com/weihaolun/twitter-visualization/master/datasources/first_week_data.json").then((data) => {
+    d3.json("https://raw.githubusercontent.com/weihaolun/twitter-visualization/master/datasources/all_weeks_data.json").then((data) => {
 
         var dataByWeekday = d3.nest()
             .key(function (d) { return d.weekday; })
@@ -39,21 +39,21 @@ function optionChanged(newWeekday) {
 
 // Data Panel
 function buildMetadata(weekday) {
-    d3.json("https://raw.githubusercontent.com/weihaolun/Twitter-Sentiment-Analysis/main/tweets_count.json").then((data) => {
-        
-    // Roll up total counts data by weekday (this is the total tweets occured)
-        var rollByWeekday = d3.nest()
-            .key(function (d) { return d.weekday; })
-            .entries(data);
-        console.log(rollByWeekday)
+    d3.json("https://raw.githubusercontent.com/weihaolun/twitter-visualization/master/datasources/weekly_tweets_counts.json").then((data) => {
 
         // Create an array for each day
         const countArray = data.filter(sampleObj => sampleObj.weekday === weekday);
-        console.log("here", countArray);
+        console.log("This weekday's total tweets info", countArray);
+
+        // Create an iterate to accumulate total tweets occured on this weekday
+        var totalTweets = 0
+        for (var i = 0; i < countArray.length; i++) {
+            totalTweets += countArray[i].tweet_count;
+        }
         
         // Create an oject of total tweets occured of the day for display
-        const tweetsOccured = {"Total Tweets": countArray[0].tweet_count};
-        console.log(tweetsOccured);
+        const tweetsOccured = {"Total Tweets": totalTweets};
+        console.log("Sum of tweets occured this weekday", tweetsOccured);
 
         // Create a panel to hold the all tweets occured content
         const TOTALPANEL = d3.select("#all-tweets-occured");
@@ -64,32 +64,73 @@ function buildMetadata(weekday) {
             TOTALPANEL.append("h6").text(`${key.toUpperCase()}: ${value.toString()}`);
         });
 
+        // to calculate number of weeks
+        numberOfWeeks = Math.round(data.length / 7);
+        console.log("this is the number of weeks", numberOfWeeks);
+
+        // object to hold start and end date and weeks
+        const dataDateInfo = {
+            "Date Range": `${data[0].created_date} — ${data[data.length-1].created_date}`,
+            "Number of Weeks": numberOfWeeks
+        }
+
+        // Create a panel to hold the all tweets occured content
+        const DATEPANEL = d3.select("#data-date-info");
+        DATEPANEL.html("");
+
+        // Append total tweets occured to the pannel with selector
+        Object.entries(dataDateInfo).forEach(([key, value]) => {
+            DATEPANEL.append("h6").text(`${key.toUpperCase()}: ${value.toString()}`);
+        });
+
     })
-    d3.json("https://raw.githubusercontent.com/weihaolun/twitter-visualization/master/datasources/first_week_data.json").then((data) => {
+    d3.json("https://raw.githubusercontent.com/weihaolun/twitter-visualization/master/datasources/all_weeks_data.json").then((data) => {
 
         // Re-arrange the dataset by weekday
         var dataByWeekday = d3.nest()
             .key(function (d) { return d.weekday; })
             .entries(data);
-        console.log(dataByWeekday)
         
-        // Create an array to hold each weekday's tweets
+        // Create an array to hold each weekday's detail with key
         const resultArray = dataByWeekday.filter(sampleObj => sampleObj.key == weekday);
-        console.log("result array", resultArray)
-        const theDayTweets = resultArray[0].values;
-
-        // Create an array to hold 5 tweets from the day
-        const tweetstext = [];
-        for (let i = 0; i < 5; i++) {
-            tweetstext.push(theDayTweets[i].tweet);
-        }
-        // Create an panel to hold the tweet text
-        const TWEETSPANEL = d3.select("#tweettext");
-        TWEETSPANEL.html("");
         
-        // Append the tweet text to display
-        Object.entries(tweetstext).forEach(([key, value]) => {
-            TWEETSPANEL.append("h6").text(`${value.toString()}`);
+        // Create an array to hold sample data only (with no key)
+        const theDayTweets = resultArray[0].values;
+        console.log("this is the day's data", theDayTweets)
+
+        // Roll up by scores
+        const tweetsByScore = d3.nest()
+            .key(function (d) {return d.score; })
+            .object(theDayTweets);
+
+        // Create an array to hold 5 posi tweets from the day
+        const fivePosiTweets = [];
+        for (let i = 0; i < 5; i++) {
+            fivePosiTweets.push(tweetsByScore[1][i].tweet);
+        }
+
+        // Create an panel to hold the posi tweet text
+        const POSITWEETSPANEL = d3.select("#positweets");
+        POSITWEETSPANEL.html("");
+        
+        // Append the posi tweet text to display
+        Object.entries(fivePosiTweets).forEach(([key, value]) => {
+            POSITWEETSPANEL.append("h6").text(`${value.toString()}`);
+        });
+
+        // Create an array to hold 5 nega tweets from the day
+        const fiveNegaTweets = [];
+        for (let i = 0; i < 5; i++) {
+            fiveNegaTweets.push(tweetsByScore[0][i].tweet);
+        }
+        
+        // Create an panel to hold the nega tweet text
+        const NEGATWEETSPANEL = d3.select("#negatweets");
+        NEGATWEETSPANEL.html("");
+        
+        // Append the nega tweet text to display
+        Object.entries(fiveNegaTweets).forEach(([key, value]) => {
+            NEGATWEETSPANEL.append("h6").text(`${value.toString()}`);
         });
 
         // Create an array to hold score and counts
@@ -97,54 +138,28 @@ function buildMetadata(weekday) {
             .key(function (d) { return d.score; })
             .rollup(function (v) { return v.length; })
             .object(theDayTweets);
-        console.log("result sccore count", resultScoreCount);
+        console.log("sample result score count", resultScoreCount);
 
-        // Create an array to hold counts with label
+        // Creat consts for percentage
+        const posiPercentage = Math.round((resultScoreCount[1] / theDayTweets.length) * 100);
+        const negaPercentage = Math.round((resultScoreCount[0] / theDayTweets.length) * 100);
+
+        // Create an array to hold percentage with label
         const countDisplay = {
-            "Positive": resultScoreCount[0],
-            "Negative": resultScoreCount[1]
+            "Positive": posiPercentage,
+            "Negative": negaPercentage
         }
 
-        // Create panel to hold the counts
+        // Create panel to hold the percentage
         const COUNTPANEL = d3.select("#weekday-count");
         COUNTPANEL.html("");
         
-        // Append the counts to display
+        // Append the percentage to display
         Object.entries(countDisplay).forEach(([key, value]) => {
-            COUNTPANEL.append("h6").text(`${key.toUpperCase()}: ${value.toString()}`);
+            COUNTPANEL.append("h6").text(`${key.toUpperCase()}: ${value.toString()}%`);
         });
 
-        // const PANEL2 = d3.select("#weekinfo");
-
-        // const numofWeeks = {"WEEKS": "2", "Date Range": "11/01/2021 - 11/15/2021"}
-        // Object.entries(numofWeeks).forEach(([key,value]) => {
-        //     PANEL2.text(`${key.toUpperCase()}: ${value.toString()}`);
-        //     });
-
-        // Create an array to hold 0 and 1 and another array to hold sentiment counts
-        // const scoreLabel = ["1=Positive", "0=Negative"];
-        // const theDayCount = [];
-        // for (let i = 0; i < 2; i++) {
-        //     theDayCount.push(resultScoreCount[i]);
-        // }
-
-        // // plot the day's sentiment distribution pie chart
-        // const dayScorePie = {
-        //     labels: scoreLabel,
-        //     values: theDayCount,
-        //     // labels: ["0=Positive", "1=Negative"],
-        //     type: 'pie',
-        //     marker: { colors: ["#B73038", "#8B9094"] }
-        // };
-        // const pieData = [dayScorePie];
-        // const pielayout = {
-        //     title: "<b> Sentiment Distribution <b>",
-        //     paper_bgcolor: "#D7DCDD",
-        //     plot_bgcolor: "#D7DCDD",
-        // };
-        // Plotly.newPlot("theday-pie-plot", pieData, pielayout);
-
-        const posiPercentage = Math.round((resultScoreCount[0] / theDayTweets.length) * 100)
+        // Create the gauge chart for positive rate
         var gaugeData = [
             {
               domain: { x: [0, 1], y: [0, 1] },
@@ -182,16 +197,14 @@ function buildMetadata(weekday) {
             .key(function (d) { return d.score; })
             .rollup(function (v) { return v.length; })
             .entries(theDayTweets);
-        console.log(theDayHourlyDistribution);
 
-        // Creat an array to hold the day's posi count and an array to hold nega count
-
+        // Creat an array to hold the day's hourly posi count and an array to hold nega count
         const hourTimes = ["00:00", "01:00", "02:00", "03:00", "04:00", "05:00", "06:00", "07:00", "08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00"];
         const theDayPosiHour = [];
         const theDayNegaHour = [];
         for (let i = 0; i < 24; i++) {
-            theDayPosiHour.push(theDayHourlyDistribution[i].values[0].value);
-            theDayNegaHour.push(theDayHourlyDistribution[i].values[1].value);
+            theDayPosiHour.push(theDayHourlyDistribution[i].values[1].value);
+            theDayNegaHour.push(theDayHourlyDistribution[i].values[0].value);
         }
 
         // plot the day hourly sentiment line chart
@@ -250,7 +263,7 @@ function buildMetadata(weekday) {
         // Create a new array with only the first 100 / 10 items
         var topWordsCloud = items.slice(1, 101)
         var topWords = items.slice(1, 11)
-        console.log(topWords)
+        console.log("This weekday's top 10 words counts", topWords)
 
         // Create the yticks for the bar chart.
         var yticks = topWords.map(function (word) {
@@ -276,7 +289,7 @@ function buildMetadata(weekday) {
             title: "<b>Top 10 Words<b>",
             paper_bgcolor: "#D7DCDD",
             plot_bgcolor: "#D7DCDD",
-            xaxis: { range: [0, 1000] },
+            xaxis: { range: [0, 1600] },
             yaxis: { range: [-1, 10] },
         };
         // Use Plotly to plot the data with the layout. 
@@ -296,16 +309,17 @@ function buildMetadata(weekday) {
             title.text("Top 100 Words")
             title.fontWeight("bold");
             title.fontColor("#4a4b4c");
+            title.fontSize(17);
             // set an array of angles at which the words will be laid out
-            chart.angles([0])
+            chart.angles([0]);
             // set the mode of the tag cloud
             chart.mode("spiral");
             // create and configure a color scale.
             var customColorScale = anychart.scales.ordinalColor();
             customColorScale.ranges([
-                { less: 200 },
-                { from:200, to: 500 },
-                { greater: 500 }
+                { less: 400 },
+                { from:400, to: 1000 },
+                { greater: 1000 }
             ]);
             customColorScale.colors(["#8B9094", "#4A4B4C", "#B73038"]);
             // set the color scale as the color scale of the chart

@@ -15,7 +15,6 @@
   <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
   <script src="https://cdn.anychart.com/releases/8.10.0/js/anychart-base.min.js" type="text/javascript"></script>
 </head>
-
 <body style="background-color: #D7DCDD;">
   <div class="container">
     <div class="row">
@@ -25,8 +24,67 @@
       </div>
     </div>
     <!-- weeks data starts here -->
-    
-    <!-- weekday data starts here this will be bottom part-->
+    <div class="row">
+      <div class="col-sm-12 text-center" style="color: #ffffff; background-color: #B73038;">
+        <h1 class="display-4"> <img src="static/images/tesla.svg" class="logo" with="40" height="40"> Weekly Data Dashboard</h1>
+    </div>
+    <!-- this is the row for data overview -->
+    <div class="row">
+      <div class="col-sm-3 text-center">
+        <p>&nbsp;</p>
+        <div class="weekdata" style="background-color: #B73038; color: #ffffff;">
+          <p>&nbsp;</p>
+          <h4>Pick A Week</h4>
+          <!-- <select id="selWeeks"></select> -->
+          <select id="selWeeks" onchange="weekChanged(this.value)" style="background-color:#D7DCDD; color: black;"></select>
+          <p>&nbsp;</p>
+        </div> 
+      </div>
+      <!-- insert 3 more columns here -->
+      <div class="col-sm-3">
+        <p>&nbsp;</p>
+        <div class="col d-flex align-items-start text-center" style="background-color: #b9bec1; height: 200px">
+          <div>
+            <p>&nbsp;</p>
+            <h3>Date Range</h3>
+            <h2><i class="bi bi-calendar2-week"></i> </h2>
+            <div id="weekly-data-range"></div>
+            <p>&nbsp;</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-3">
+        <p>&nbsp;</p>
+        <div class="col d-flex align-items-start text-center" style="background-color: #b9bec1; height: 200px">
+          <div>
+            <p>&nbsp;</p>
+            <h3>Total Tweets</h3>
+            <h2><i class="bi bi-twitter"></i></h2>
+            <div id="total-tweets-occurred"></div>
+            <p>&nbsp;</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-3">
+        <p>&nbsp;</p>
+        <div class="col d-flex align-items-start text-center" style="background-color: #b9bec1; height: 200px">
+          <div>
+            <p>&nbsp;</p>
+            <h3> Average Per Day</h3>
+            <h2><i class="bi bi-bar-chart-line"></i></h2>
+            <div id="average-tweets"></div>
+            <p>&nbsp;</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- this is row for the bar chart-->
+    <div class="row">
+      <div class="col-sm-12 text-center">
+        <div id="weekly-bar"></div>
+      </div>
+    </div>
+    <!-- weekday data starts here-->
     <div class="row">
       <div class="col-sm-12 text-center" style="color: #ffffff; background-color: #B73038;">
         <h1 class="display-4"> <img src="static/images/tesla.svg" class="logo" with="40" height="40"> Weekday Data Dashboard</h1>
@@ -68,13 +126,13 @@
         <p>&nbsp;</p>
         <div class="col d-flex align-items-start">
           <div>
-            <h3><i class="bi bi-people"></i> Sample Sentiment</h3>
+            <h3><i class="bi bi-people"></i>Sentiment Distribution</h3>
             <div id="weekday-count" class="panel-body"></div>
           </div>
         </div>
       </div>
     </div>
-    <!-- this is row for the pie chart may change chart, now has a summary but will be removed-->
+    <!-- this is row for five positive tweets and positive rate gauge chart-->
     <div class="row">
       <div class="col-sm-3">
         <div class="panel panel-primary" style="background-color: #8B9094; color: #ffffff; border: #4A4B4C;">
@@ -89,7 +147,7 @@
         <div id="gauge"></div>
       </div>
     </div>
-    <!-- this is the row for more chart (keywords) -->
+    <!-- this is the row for five negative tweets and word bar and word cloud -->
     <div class="row">
       <div class="col-sm-3">
         <div class="panel panel-primary" style="background-color: #8B9094; color: #ffffff; border: #4A4B4C;">
@@ -116,6 +174,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.5.0/d3.js"></script>
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <!-- <script src="hourly_sample.json"></script> -->
+  <script src="static/js/weekly.js"></script>
   <script src="static/js/weekday.js"></script>
   <script src="https://cdn.anychart.com/releases/v8/js/anychart-base.min.js"></script>
   <script src="https://cdn.anychart.com/releases/v8/js/anychart-tag-cloud.min.js"></script>
