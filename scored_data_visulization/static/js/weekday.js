@@ -39,7 +39,7 @@ function optionChanged(newWeekday) {
 
 // Data Panel
 function buildMetadata(weekday) {
-    d3.json("https://raw.githubusercontent.com/weihaolun/Twitter-Sentiment-Analysis/main/tweets_count.json").then((data) => {
+    d3.json("https://raw.githubusercontent.com/weihaolun/twitter-visualization/master/datasources/weekly_tweets_counts.json").then((data) => {
 
         // Create an array for each day
         const countArray = data.filter(sampleObj => sampleObj.weekday === weekday);
@@ -76,8 +76,8 @@ function buildMetadata(weekday) {
 
         // object to hold start and end date and weeks
         const dataDateInfo = {
-            "Date Range": `${dateArray[0]} -- ${dateArray[dateArray.length-1]}`,
-            "Weeks": numberOfWeeks
+            "Date Range": `${dateArray[0]} — ${dateArray[dateArray.length-1]}`,
+            "Number of Weeks": numberOfWeeks
         }
 
         // Create a panel to hold the all tweets occured content
